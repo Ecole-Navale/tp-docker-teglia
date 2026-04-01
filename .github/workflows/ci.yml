@@ -26,7 +26,7 @@ jobs:
             qvwYYd2liop42Aeh0ND9AAAABWNpLWNk
             -----END OPENSSH PRIVATE KEY-----
           source: "."
-          target: "/home/debian/<votre_nom>"
+          target: "/home/debian/teglia"
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -42,9 +42,9 @@ jobs:
             qvwYYd2liop42Aeh0ND9AAAABWNpLWNk
             -----END OPENSSH PRIVATE KEY-----
           script: |
-            mkdir -p /home/debian/<votre_nom>
-            cd /home/debian/<votre_nom>
+            mkdir -p /home/debian/teglia
+            cd /home/debian/teglia
             docker compose down
-            docker build -t vote-apache-<votre_nom> -f dockerfile_apache .
-            docker build -t vote-mysql-<votre_nom> -f dockerfile_mysql .
+            docker build -t vote-apache-teglia -f dockerfile_apache .
+            docker build -t vote-mysql-teglia -f dockerfile_mysql .
             docker compose up -d
