@@ -1,0 +1,50 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy project to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: vps-3c0047a3.vps.ovh.net
+          username: debian
+          key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+            QyNTUxOQAAACDVX/jOJjyvmH3hufZgXd0Juqr8GGHdpYqKeNgHodDQ/QAAAIgD7Ic/A+yH
+            PwAAAAtzc2gtZWQyNTUxOQAAACDVX/jOJjyvmH3hufZgXd0Juqr8GGHdpYqKeNgHodDQ/Q
+            AAAEBF71z2l3dsmDm9m2Zgg7F5cHnjTMToCUWta/7e4Aaro9Vf+M4mPK+YfeG59mBd3Qm6
+            qvwYYd2liop42Aeh0ND9AAAABWNpLWNk
+            -----END OPENSSH PRIVATE KEY-----
+          source: "."
+          target: "/home/debian/<votre_nom>"
+
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: vps-3c0047a3.vps.ovh.net
+          username: debian
+          key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+            QyNTUxOQAAACDVX/jOJjyvmH3hufZgXd0Juqr8GGHdpYqKeNgHodDQ/QAAAIgD7Ic/A+yH
+            PwAAAAtzc2gtZWQyNTUxOQAAACDVX/jOJjyvmH3hufZgXd0Juqr8GGHdpYqKeNgHodDQ/Q
+            AAAEBF71z2l3dsmDm9m2Zgg7F5cHnjTMToCUWta/7e4Aaro9Vf+M4mPK+YfeG59mBd3Qm6
+            qvwYYd2liop42Aeh0ND9AAAABWNpLWNk
+            -----END OPENSSH PRIVATE KEY-----
+          script: |
+            mkdir -p /home/debian/<votre_nom>
+            cd /home/debian/<votre_nom>
+            docker compose down
+            docker build -t vote-apache-<votre_nom> -f dockerfile_apache .
+            docker build -t vote-mysql-<votre_nom> -f dockerfile_mysql .
+            docker compose up -d
